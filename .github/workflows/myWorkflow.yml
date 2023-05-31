@@ -1,0 +1,62 @@
+name: My workflow
+run-name: Building
+on: 
+    push:
+        branches: main
+    pull_request:
+        branches: main
+    workflow_dispatch:
+        inputs:
+            inputDev:
+                type: choice
+                options:
+                - dev1
+                - dev2
+                description: Which dev?
+                required: true
+            inputStage:
+                type: string
+                required: true
+                description: What's your name?
+            inputProd:
+                type: boolean
+                description: Are you sure?
+                required: true
+
+# jobs:
+#   build:
+#     runs-on: [ubuntu-latest]
+#     steps:
+#       -
+#         name: Print output
+#         env:
+#           MY_ENV: ${{ steps.build-and-push.outputs.build-metadata }}
+jobs:
+    Build:
+        runs-on: ubuntu-latest
+        steps:
+        -
+            run: echo Building!
+    Dev:
+        runs-on: ubuntu-latest
+        environment: dev
+        if: github.event_name == 'pull_request'
+        needs: Build
+        steps:
+        -
+            run: echo The input is ${{inputs.inputDev}}
+    Stage:
+        runs-on: ubuntu-latest
+        environment: stage
+        needs: Build
+        if: github.event.ref == 'ref/heads/main'
+        steps:
+        -
+            run: echo The input is ${{inputs.inputStage}}
+    Prod:
+        runs-on: ubuntu-latest
+        environment: prod
+        needs: Stage
+        steps:
+        -
+            run: echo The input is ${{inputs.inputProd}}

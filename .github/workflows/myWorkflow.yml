@@ -20,7 +20,7 @@ on:
                 description: What's your name?
             inputProd:
                 type: boolean
-                description: Are you sure?
+                description: Deploy to prod as well?
                 required: true
 jobs:
     Build:
@@ -40,12 +40,13 @@ jobs:
         runs-on: ubuntu-latest
         environment: stage
         needs: Build
-        if: github.event.ref == 'refs/heads/main'
+        if: github.event.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
         steps:
         -
             run: echo The input is ${{inputs.inputStage}}
     Prod:
         runs-on: ubuntu-latest
+        if: github.event.ref == 'refs/heads/main' || inputs.inputProd == true
         environment: prod
         needs: Stage
         steps:

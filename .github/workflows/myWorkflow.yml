@@ -2,7 +2,7 @@ name: My workflow
 run-name: Building
 on: 
     push:
-        branches: main
+        branches: [main, testing-trigger-pull]
     pull_request:
         branches: main
     workflow_dispatch:
@@ -26,10 +26,16 @@ jobs:
     Build:
         runs-on: ubuntu-latest
         steps:
-        -
-            run: |
-                echo Building!
-                exit 1
+            -   name: Generate tag
+                id: generate-tag
+                run: |
+                    IMAGETAG=${GITHUB_SHA:0:8}
+                    if [$GITHUB_EVENT_NAME == push]; then IMAGETAG=$IMAGETAG,latest; fi
+                    echo "IMAGE_TAG=$IMAGETAG" >> $GITHUB_ENV
+            -   name: Print
+                run: |
+                    echo super below
+                    echo $IMAGE_TAG
     Dev:
         runs-on: ubuntu-latest
         environment: dev

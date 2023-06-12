@@ -48,7 +48,7 @@ jobs:
         runs-on: ubuntu-latest
         environment: stage
         needs: Build
-        if: github.event.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+        # if: github.event.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
         steps:
         -
             run: echo The input is ${{inputs.inputStage}}

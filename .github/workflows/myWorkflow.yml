@@ -2,32 +2,40 @@ name: My workflow
 run-name: Building
 on: 
     push:
-        branches: main
-    pull_request:
-        branches: main
-    workflow_dispatch:
-        inputs:
-            inputDev:
-                type: choice
-                options:
-                - dev1
-                - dev2
-                description: Which dev?
-                required: true
-            inputStage:
-                type: string
-                required: true
-                description: What's your name?
-            inputProd:
-                type: boolean
-                description: Are you sure?
-                required: true
+        # branches: [main, testing-trigger-pull]
+    # pull_request:
+    #     branches: main
+    # workflow_dispatch:
+    #     inputs:
+    #         inputDev:
+    #             type: choice
+    #             options:
+    #             - dev1
+    #             - dev2
+    #             description: Which dev?
+    #             required: true
+    #         inputStage:
+    #             type: string
+    #             required: true
+    #             description: What's your name?
+    #         inputProd:
+    #             type: boolean
+    #             description: Deploy to prod as well?
+    #             required: true
 jobs:
     Build:
         runs-on: ubuntu-latest
         steps:
-        -
-            run: echo Building!
+            -   name: Generate tag
+                id: generate-tag
+                run: |
+                    IMAGETAG=${GITHUB_SHA:0:8}
+                    if [ $GITHUB_EVENT_NAME = push ]; then IMAGETAG=$IMAGETAG,latest; fi
+                    echo "IMAGE_TAG=$IMAGETAG" >> $GITHUB_ENV
+            -   name: Print
+                run: |
+                    echo super below
+                    echo $IMAGE_TAG
     Dev:
         runs-on: ubuntu-latest
         environment: dev
@@ -40,12 +48,13 @@ jobs:
         runs-on: ubuntu-latest
         environment: stage
         needs: Build
-        if: github.event.ref == 'refs/heads/main'
+        # if: github.event.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
         steps:
         -
             run: echo The input is ${{inputs.inputStage}}
     Prod:
         runs-on: ubuntu-latest
+        # if: github.event.ref == 'refs/heads/main' || inputs.inputProd == true
         environment: prod
         needs: Stage
         steps:

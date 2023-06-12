@@ -2,26 +2,26 @@ name: My workflow
 run-name: Building
 on: 
     push:
-        branches: [main, testing-trigger-pull]
-    pull_request:
-        branches: main
-    workflow_dispatch:
-        inputs:
-            inputDev:
-                type: choice
-                options:
-                - dev1
-                - dev2
-                description: Which dev?
-                required: true
-            inputStage:
-                type: string
-                required: true
-                description: What's your name?
-            inputProd:
-                type: boolean
-                description: Deploy to prod as well?
-                required: true
+        # branches: [main, testing-trigger-pull]
+    # pull_request:
+    #     branches: main
+    # workflow_dispatch:
+    #     inputs:
+    #         inputDev:
+    #             type: choice
+    #             options:
+    #             - dev1
+    #             - dev2
+    #             description: Which dev?
+    #             required: true
+    #         inputStage:
+    #             type: string
+    #             required: true
+    #             description: What's your name?
+    #         inputProd:
+    #             type: boolean
+    #             description: Deploy to prod as well?
+    #             required: true
 jobs:
     Build:
         runs-on: ubuntu-latest
